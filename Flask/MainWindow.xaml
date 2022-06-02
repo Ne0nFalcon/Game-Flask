@@ -1,0 +1,1224 @@
+﻿<Window x:Class="Flask.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Flask"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        mc:Ignorable="d"
+        Title="Flask" Height="800" Width="800" WindowStyle="None" ResizeMode="NoResize" Loaded="Window_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Grid x:Name="MainGrid">
+        <StackPanel x:Name="Header">
+            <TextBlock Text="Flask" FontSize="70" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="MelodBold"/>
+            <TextBlock x:Name="LevelText" Text="Level 1" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Ethnocentric" FontSize="38" Visibility="Collapsed"/>
+            <StackPanel x:Name="ScoreStack" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10" Visibility="Collapsed">
+                <TextBlock Text="Score: " FontSize="20" FontFamily="Ethnocentric"/>
+                <TextBlock x:Name="Score" FontSize="20" FontFamily="Ethnocentric" Text="{Binding Path=score}"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10">
+            <Button x:Name="Reset" Width="70" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5" Click="Reset_Click">
+                <Button.ToolTip>
+                    <ToolTip>Перезагрузить уровень</ToolTip>
+                </Button.ToolTip>
+                <Image Source="icons\reset.png" Margin="-16"/>
+            </Button>
+            <Button x:Name="Help" Width="70" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5" Click="Help_Click">
+                <Button.ToolTip>
+                    <ToolTip>Помощь</ToolTip>
+                </Button.ToolTip>
+                <Image Source="icons\help.png" Margin="-12"/>
+            </Button>
+            <Button x:Name="BackHelp" Width="70" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5" Click="BackHelp_Click" Visibility="Collapsed">
+                <Button.ToolTip>
+                    <ToolTip>Назад</ToolTip>
+                </Button.ToolTip>
+                <Image Source="icons\back.png" Margin="-12"/>
+            </Button>
+            <Button x:Name="AddFlask" Width="70" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5" Click="Add_Click">
+                <Button.ToolTip>
+                    <ToolTip>Добавить еще одну колбу (-10 очков)</ToolTip>
+                </Button.ToolTip>
+                <Image Source="icons\flask.png" Margin="-12"/>
+            </Button>
+        </StackPanel>
+
+
+        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Orientation="Horizontal">
+            <Button x:Name="Sver" Width="70" Height="70" Click="Sver_Click" Padding="0" Margin="5">
+                <Button.ToolTip>
+                    <ToolTip>Свернуть</ToolTip>
+                </Button.ToolTip>
+                <Image Source="icons\Sver.png" Margin="-6"/>
+            </Button>
+            <Button x:Name="Exit" Width="70" Height="70" Click="Exit_Click" Padding="0" Margin="5">
+                <Button.ToolTip>
+                    <ToolTip>Закрыть</ToolTip>
+                </Button.ToolTip>
+                <Image Source="icons\exit.png" Margin="5"/>
+            </Button>
+        </StackPanel>
+
+        <StackPanel x:Name="HelpPanel" Margin="20,100,20,0" Visibility="Collapsed">
+            <TextBlock Text="   Помощь и правила игры:          1. Выберите колбу, нажав на нее.     2. Выберите вторую колбу.            3. Ячейка 'Перельется' в новую.    4. Переливать можно только в такие же ячейки.                       5. Уровень будет завершен тогда, когда каждый из цветов будет собран в своей колбе.             В начале уровня Вам дается определенное количество очков, но за каждый ваш ход будет отниматься одно из них. Ваша задача сделать минимальное количество ходов для максимального количества очков." FontSize="40" FontFamily="Consolas" TextWrapping="WrapWithOverflow"/>
+        </StackPanel>
+
+        <Button x:Name="TextA" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15, 0">
+            <Image x:Name="TextAI"/>
+        </Button>
+        <StackPanel x:Name="Main" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Margin="0,250,0,0" Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel x:Name="A" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="a1" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="a1i"/>
+                    </Button>
+                    <Button x:Name="a2" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="a2i"/>
+                    </Button>
+                    <Button x:Name="a3" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="a3i"/>
+                    </Button>
+                    <Button x:Name="a4" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="a4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformA" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="a1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="a2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="a3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="a4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+
+                <StackPanel x:Name="B" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="b1" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="b1i"/>
+                    </Button>
+                    <Button x:Name="b2" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="b2i"/>
+                    </Button>
+                    <Button x:Name="b3" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="b3i"/>
+                    </Button>
+                    <Button x:Name="b4" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="b4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformB" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="b1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="b2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="b3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="b4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+
+                <StackPanel x:Name="C" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="c1" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="c1i"/>
+                    </Button>
+                    <Button x:Name="c2" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="c2i"/>
+                    </Button>
+                    <Button x:Name="c3" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="c3i"/>
+                    </Button>
+                    <Button x:Name="c4" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="c4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformC" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="c1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="c2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="c3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="c4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+
+                <StackPanel x:Name="D" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="d1" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="d1i"/>
+                    </Button>
+                    <Button x:Name="d2" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="d2i"/>
+                    </Button>
+                    <Button x:Name="d3" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="d3i"/>
+                    </Button>
+                    <Button x:Name="d4" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="d4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformD" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="d1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="d2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="d3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="d4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+
+                <StackPanel x:Name="E" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="e1" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="e1i"/>
+                    </Button>
+                    <Button x:Name="e2" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="e2i"/>
+                    </Button>
+                    <Button x:Name="e3" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="e3i"/>
+                    </Button>
+                    <Button x:Name="e4" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="e4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformE" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="e1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="e2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="e3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="e4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+
+                <StackPanel x:Name="F" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="f1" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="f1i"/>
+                    </Button>
+                    <Button x:Name="f2" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="f2i"/>
+                    </Button>
+                    <Button x:Name="f3" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="f3i"/>
+                    </Button>
+                    <Button x:Name="f4" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="f4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformF" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="f1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="f2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="f3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="f4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel x:Name="G" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="g1" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="g1i"/>
+                    </Button>
+                    <Button x:Name="g2" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="g2i"/>
+                    </Button>
+                    <Button x:Name="g3" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="g3i"/>
+                    </Button>
+                    <Button x:Name="g4" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="g4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformG" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="g1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="g2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="g3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="g4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+
+                <StackPanel x:Name="H" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="h1" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="h1i"/>
+                    </Button>
+                    <Button x:Name="h2" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="h2i"/>
+                    </Button>
+                    <Button x:Name="h3" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="h3i"/>
+                    </Button>
+                    <Button x:Name="h4" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="h4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformH" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="h1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="h2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="h3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="h4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+
+                <StackPanel x:Name="I" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="i1" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="i1i"/>
+                    </Button>
+                    <Button x:Name="i2" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="i2i"/>
+                    </Button>
+                    <Button x:Name="i3" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="i3i"/>
+                    </Button>
+                    <Button x:Name="i4" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60" Click="Click">
+                        <Image x:Name="i4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformI" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="i1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="i2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="i3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="i4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+
+                <StackPanel x:Name="J" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="j1" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="j1i"/>
+                    </Button>
+                    <Button x:Name="j2" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="j2i"/>
+                    </Button>
+                    <Button x:Name="j3" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="j3i"/>
+                    </Button>
+                    <Button x:Name="j4" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="j4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformJ" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="j1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="j2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="j3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="j4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+                <StackPanel x:Name="K" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button x:Name="k1" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="k1i"/>
+                    </Button>
+                    <Button x:Name="k2" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="k2i"/>
+                    </Button>
+                    <Button x:Name="k3" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="k3i"/>
+                    </Button>
+                    <Button x:Name="k4" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="k4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformK" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="k1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="k2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="k3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="k4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+                <StackPanel x:Name="L" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                    <Button x:Name="l1" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="l1i"/>
+                    </Button>
+                    <Button x:Name="l2" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="l2i"/>
+                    </Button>
+                    <Button x:Name="l3" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="l3i"/>
+                    </Button>
+                    <Button x:Name="l4" Click="Click" Background="Transparent" BorderBrush="#FFF" Width="60" Height="60">
+                        <Image x:Name="l4i"/>
+                    </Button>
+
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="AnimatedTranslateTransformL" X="0" Y="0" />
+                    </StackPanel.RenderTransform>
+
+                    <StackPanel.Triggers>
+                        <EventTrigger SourceName="l1" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="l2" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="l3" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger SourceName="l4" RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="-15" Duration="0:0:0.25" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </StackPanel.Triggers>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel.Triggers>
+                <EventTrigger SourceName="Main" RoutedEvent="MouseLeftButtonDown">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformA" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformB" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformC" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformD" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformE" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformF" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformG" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformH" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformI" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformJ" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformK" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                            <DoubleAnimation Storyboard.TargetName="AnimatedTranslateTransformL" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.25" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </StackPanel.Triggers>
+        </StackPanel>
+    </Grid>
+</Window>
